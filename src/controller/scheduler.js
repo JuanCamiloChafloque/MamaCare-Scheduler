@@ -61,15 +61,13 @@ exports.postSchedule = (req, res) => {
     background: background,
   };
 
-  agenda.define("scheduleNotification-" + id, async () => {
+  agenda.define(id, async () => {
     await scheduleNotification(newNotification, userId);
   });
 
   (async function () {
-    //const notify = agenda.create("scheduleNotification-" + id);
     await agenda.start();
-    //await notify.repeatEvery(scheduledTime, { timezone: "America/Bogota" }).save();
-    await agenda.schedule(date, "scheduleNotification-" + id);
+    await agenda.schedule(date, id);
   })();
 
   res
