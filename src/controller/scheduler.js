@@ -31,7 +31,7 @@ exports.postSchedule = (req, res) => {
   date.setHours(parseInt(hora.split(":")[0]));
   date.setMinutes(parseInt(hora.split(":")[1]));
   date.setSeconds(0);
-  date.setHours(date.getHours() + 4);
+  date.setHours(date.getHours() - 1);
 
   const color = categoria.split(" ")[1];
   let background = "";
@@ -45,6 +45,10 @@ exports.postSchedule = (req, res) => {
     background = "#B4D8E7";
   }
 
+  const scheduledTime = `${date.getMinutes()} ${date.getHours()} ${date.getDate()} ${
+    date.getMonth() + 1
+  } *`;
+
   const newNotification = {
     id: id,
     notificationId: notificationId,
@@ -57,13 +61,18 @@ exports.postSchedule = (req, res) => {
     background: background,
   };
 
-  agenda.define(id, async () => {
+  agenda.define(id, async (job) => {
     await scheduleNotification(newNotification, userId);
+    job.attrs.nextRunAt = null;
+    await job.save();
   });
 
   (async function () {
+    const notify = agenda.create(id);
     await agenda.start();
-    await agenda.schedule(date, id);
+    await notify
+      .repeatEvery(scheduledTime, { timezone: "America/Bogota" })
+      .save();
   })();
 
   res
