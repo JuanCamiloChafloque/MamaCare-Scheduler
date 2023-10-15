@@ -24,7 +24,7 @@ async function scheduleNotification(newNotification, userId) {
 exports.postSchedule = (req, res) => {
   const { data, userId } = req.body;
   const { id, titulo, notas, categoria, fecha, hora, notificationId } = data;
-
+  const date = new Date();
   date.setFullYear(parseInt(fecha.split("-")[0]));
   date.setMonth(parseInt(fecha.split("-")[1]) - 1);
   date.setDate(parseInt(fecha.split("-")[2]));
@@ -44,10 +44,6 @@ exports.postSchedule = (req, res) => {
   } else {
     background = "#B4D8E7";
   }
-
-  const scheduledTime = `${date.getMinutes()} ${date.getHours()} ${date.getDate()} ${
-    date.getMonth() + 1
-  } *`;
 
   const newNotification = {
     id: id,
